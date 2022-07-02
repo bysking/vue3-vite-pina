@@ -3,6 +3,10 @@
 <template>
   <div>
     <div>home</div>
+    <div>
+      {{ doneTodosCount }}
+    </div>
+    <div @click="updateState()">updateState</div>
     <div @click="jumpInfo()">info</div>
   </div>
 </template>
@@ -17,7 +21,11 @@ export default {
 
   watch: {},
 
-  computed: {},
+  computed: {
+    doneTodosCount() {
+      return this.$store.state;
+    },
+  },
 
   mounted() {},
 
@@ -26,6 +34,9 @@ export default {
       this.$router.push({
         path: "/info",
       });
+    },
+    updateState() {
+      this.$store.dispatch("actionUpdateCount", 5);
     },
   },
 };

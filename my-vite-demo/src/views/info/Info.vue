@@ -32,13 +32,27 @@ export default {
       {{ rc }}
     </div>
     <div @click="testToRef">测试toRefs: {{ toRefObj }}</div>
+    <div>
+      测试state:
+      {{ rr }}
+    </div>
   </div>
 </template>
 
 <!-- 组合式api -->
 <script setup>
-import { ref, reactive, toRefs, computed, watch, watchEffect } from "vue";
+import {
+  ref,
+  reactive,
+  toRefs,
+  computed,
+  watch,
+  watchEffect,
+  onBeforeMount,
+  onMounted,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 let msg = ref({ a: 1 }); // 普通类型 +
 let rc = reactive({ a: 444 }); // 只能对象类型，数组
 
@@ -91,6 +105,22 @@ watch(
     immediate: true,
   }
 );
+
+onBeforeMount(() => {
+  // 获取接口
+  console.log("即将挂载");
+});
+
+onMounted(() => {
+  // 获取dom
+
+  console.log("获取dom");
+});
+
+const store = useStore();
+let rr = computed(() => {
+  return store.state;
+});
 </script>
 
 <style lang="less" scoped></style>
