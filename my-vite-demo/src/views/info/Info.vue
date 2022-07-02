@@ -1,15 +1,12 @@
 <!--  -->
 
 <template>
-  <div>
-    <div>home</div>
-    <div @click="jumpInfo()">info</div>
-  </div>
+  <div>info page</div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "Home",
+  name: "",
   components: {},
   data() {
     return {};
@@ -21,13 +18,7 @@ export default {
 
   mounted() {},
 
-  methods: {
-    jumpInfo() {
-      this.$router.push({
-        path: "/info",
-      });
-    },
-  },
+  methods: {},
 };
 </script>
 
