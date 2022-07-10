@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import VirtualList from "../virtual-list/index.vue";
+import VirtualList from "../virtual-list-js/index.vue";
 export default {
   name: "Home",
   components: {
