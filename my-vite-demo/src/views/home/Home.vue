@@ -2,19 +2,23 @@
 
 <template>
   <div>
-    <div>home</div>
+    <!-- <div>home</div>
     <div>
       {{ doneTodosCount }}
     </div>
     <div @click="updateState()">updateState</div>
-    <div @click="jumpInfo()">info</div>
+    <div @click="jumpInfo()">info</div> -->
+    <VirtualList />
   </div>
 </template>
 
 <script lang="ts">
+import VirtualList from "../virtual-list/index.vue";
 export default {
   name: "Home",
-  components: {},
+  components: {
+    VirtualList,
+  },
   data() {
     return {};
   },
