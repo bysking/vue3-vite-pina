@@ -1,3 +1,5 @@
+import { Console } from "console";
+
 export function isInSight(visibleIndexs: number[], current: number) {
   return visibleIndexs.indexOf(current) !== -1;
 }
@@ -27,6 +29,9 @@ type typeOptions = {
 export class Watcher {
   constructor(options: typeOptions) {
     Object.assign(this, options);
+    this.nodeMap = {};
+    this.nodeshowMap = {};
+    this.intersectionObserver = null;
     this.minH = [];
     this._init();
   }
@@ -34,12 +39,46 @@ export class Watcher {
   _init() {
     this.container = document.querySelector(this.el);
     this.items = document.querySelector(this.el).children;
+
+    this.intersectionObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > 0) {
+            console.log(entry.target.id, "展现");
+          } else {
+            console.log(entry.target.id, "隐藏");
+          }
+        });
+      },
+      {
+        root: this.container,
+      }
+    );
+
     this.itemWidth =
       (this.container.offsetWidth - this.gap * (this.column - 1)) / this.column;
 
     this.container.onscroll = (e) => {
-      let { onscroll, scrollTollow } = this;
+      let { onscroll, scrollTollow, nodeSHow } = this;
       typeof onscroll === "function" && onscroll(e);
+
+      let list = Array.from(this.items);
+
+      list.forEach((item) => {
+        let top = this.nodeMap[item.id];
+
+        if (
+          this.container.clientHeight + e.target.scrollTop > top &&
+          top < e.target.scrollTop
+        ) {
+          if (!this.nodeshowMap[item.id]) {
+            console.log(item.id, "show");
+            this.nodeshowMap[item.id] = true;
+          }
+        }
+      });
+
+      typeof nodeSHow === "function" && nodeSHow(e);
       if (
         this.container.offsetHeight + e.target.scrollTop >=
         this.scrollHeight
@@ -61,11 +100,23 @@ export class Watcher {
   _render() {
     let list = Array.from(this.items);
     list.forEach((item, index) => {
+      let id = item.id;
+      this.nodeMap[id] = item.offsetTop;
+
+      // 开始观察
+      this.intersectionObserver.observe(item);
+
       item.style.width = this.itemWidth + "px";
       if (index < this.column) {
         item.style.top = "0px";
         item.style.left = (this.itemWidth + this.gap) * index + "px";
-        this.minH.push(item.offsetHeight);
+
+        if (this.minH.length < this.column) {
+          this.minH.push(item.offsetHeight);
+        } else {
+          this.minH = [];
+          this.minH.push(item.offsetHeight);
+        }
       } else {
         this.minIndex = this._getMinIndex();
         item.style.top = this.minH[this.minIndex] + this.gap + "px";
@@ -79,11 +130,12 @@ export class Watcher {
     return this.minH.indexOf(Math.min(...this.minH));
   }
 
-  // tap() {
-  //   this.items = document.querySelector(this.el).children;
-  //   this._render();
-  //   setTimeout(() => {
-  //     this.scrollHeight = this.container.scrollHeight;
-  //   }, 0);
-  // }
+  tap() {
+    this.items = document.querySelector(this.el).children;
+    this._render();
+
+    setTimeout(() => {
+      this.scrollHeight = this.container.scrollHeight;
+    }, 0);
+  }
 }
